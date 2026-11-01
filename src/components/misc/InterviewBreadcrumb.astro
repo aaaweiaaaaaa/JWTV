@@ -1,0 +1,12 @@
+---
+import { getInterviewPeople, getPersonUrl } from "@/utils/interview-utils";
+import { getCategoryUrl, url } from "@/utils/url-utils";
+interface Props { program: string | null; person: string; }
+const { program, person } = Astro.props;
+const profile = (await getInterviewPeople()).find(item => item.data.program === program && item.data.name === person);
+---
+{profile && <nav aria-label="访谈层级" class="card-base px-6 py-4 mb-4 flex flex-wrap gap-2 text-sm text-50">
+  <a class="text-(--primary)" href={url('/categories/')}>采访节目</a><span>/</span>
+  <a class="text-(--primary)" href={getCategoryUrl(program)}>{program}</a><span>/</span>
+  <a class="text-(--primary)" href={getPersonUrl(profile)}>{person}</a><span>/</span><span>具体访谈</span>
+</nav>}

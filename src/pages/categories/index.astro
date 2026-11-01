@@ -1,0 +1,22 @@
+---
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+import { getProgramCards } from "@/utils/interview-utils";
+import InterviewPhotos from "@/components/misc/InterviewPhotos.astro";
+const programs = await getProgramCards();
+---
+<MainGridLayout title="采访节目" description="选择节目，再按被采访人物阅读访谈。">
+  <div class="card-base px-8 py-6 mb-4">
+    <h1 class="text-2xl font-bold text-(--primary)">采访节目</h1>
+    <p class="text-50 text-sm mt-2">选择节目 → 被采访人物 → 人物经历与采访概述 → 具体访谈与心得交流</p>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+    {programs.map(program => <a href={program.url} class="card-base overflow-hidden group onload-animation">
+      {program.people[0]?.data.image ? <InterviewPhotos image={program.people[0].data.image} hostImage={program.people[0].data.hostImage} guestImage={program.people[0].data.guestImage} guest={program.people[0].data.name} host={program.people[0].data.host} compact /> : <img src={program.image} alt="" class="w-full h-36 object-cover" loading="lazy" width="640" height="240" />}
+      <div class="p-6">
+        <h2 class="text-xl font-bold text-90 group-hover:text-(--primary)">{program.name}</h2>
+        <p class="text-sm text-50 mt-2 leading-relaxed">{program.description}</p>
+        <p class="text-sm text-(--primary) mt-4">{program.people.length} 位人物 · {program.posts.length} 篇访谈整理 →</p>
+      </div>
+    </a>)}
+  </div>
+</MainGridLayout>

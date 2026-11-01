@@ -1,0 +1,41 @@
+---
+import { render } from "astro:content";
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+import Markdown from "@/components/common/Markdown.astro";
+import InterviewPhotos from "@/components/misc/InterviewPhotos.astro";
+import { interviewPrograms } from "@/config/jwPrograms";
+import { getInterviewPeople, getPersonPosts, getProgramUrl } from "@/utils/interview-utils";
+import { getPostUrlBySlug, url } from "@/utils/url-utils";
+export async function getStaticPaths() {
+  return (await getInterviewPeople()).map(person => ({
+    params: { program: person.id.split('/')[0], person: person.id.split('/')[1] }, props: { person },
+  }));
+}
+const { person } = Astro.props;
+const program = interviewPrograms.find(item => item.name === person.data.program)!;
+const posts = await getPersonPosts(person);
+const { Content, headings } = await render(person);
+---
+<MainGridLayout title={`${person.data.name} · ${program.name}`} description={person.data.description} headings={headings}>
+  <article class="card-base p-6 md:p-9 mb-4" data-pagefind-body>
+    <nav aria-label="当前位置" class="text-sm text-50 mb-5 flex flex-wrap gap-2">
+      <a class="text-(--primary)" href={url('/categories/')}>采访节目</a><span>/</span>
+      <a class="text-(--primary)" href={getProgramUrl(program.slug)}>{program.name}</a><span>/</span><span>{person.data.name}</span>
+    </nav>
+    <h1 class="text-3xl font-bold text-(--primary) mb-3">{person.data.name}</h1>
+    <p class="text-50 mb-6">{person.data.description}</p>
+    {person.data.image && <InterviewPhotos image={person.data.image} hostImage={person.data.hostImage} guestImage={person.data.guestImage} guest={person.data.name} host={person.data.host} sourceLink={person.data.sourceLink} />}
+    <Markdown class="person-profile-content"><Content /></Markdown>
+  </article>
+  <section class="card-base p-6 md:p-8 mb-4" aria-labelledby="person-interviews">
+    <h2 id="person-interviews" class="text-xl font-bold text-(--primary) mb-2">具体访谈内容</h2>
+    <p class="text-sm text-50 mb-5">进入完整整理，阅读具体话题与知识点，在文章底部分享你的心得。</p>
+    <div class="space-y-4">
+      {posts.map(post => <a class="block rounded-xl p-5 bg-(--btn-regular-bg) group" href={getPostUrlBySlug(post.id)}>
+        <h3 class="font-bold text-90 group-hover:text-(--primary)">{post.data.title}</h3>
+        <p class="text-sm text-50 mt-2">{post.data.description}</p>
+        <span class="inline-block text-sm text-(--primary) mt-3">阅读访谈 · 交流心得 →</span>
+      </a>)}
+    </div>
+  </section>
+</MainGridLayout>

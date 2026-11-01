@@ -1,0 +1,33 @@
+---
+import WidgetLayout from "@/components/common/WidgetLayout.astro";
+import MusicPlayer from "@/components/features/MusicPlayer.astro";
+import { musicPlayerConfig } from "@/config/musicConfig";
+import jwMusic from "@/config/jwMusic.json";
+import I18nKey from "@/i18n/i18nKey";
+import { i18n } from "@/i18n/translation";
+import type { WidgetComponentConfig } from "@/types/config";
+
+interface Props {
+	class?: string;
+	style?: string;
+	widgetConfig?: WidgetComponentConfig;
+}
+const { class: className, style, widgetConfig } = Astro.props;
+
+const widgetId = `music-widget-${Math.random().toString(36).substring(2, 9)}`;
+
+const showTitle = widgetConfig?.showTitle !== false;
+---
+
+{musicPlayerConfig.showInSidebar !== false && (
+	<WidgetLayout id={`${widgetId}-layout`} class={className} style={style} name={i18n(I18nKey.music)} showTitle={showTitle}>
+		{jwMusic.playlist.length === 0 && /^[A-Za-z0-9_-]{11}$/.test(jwMusic.youtubeVideoId) ? (
+			<div class="px-3 pb-4">
+				<p class="text-sm text-75 mb-3">知识区 BGM · JW 的音乐分享</p>
+				<iframe class="w-full aspect-video rounded-xl" title="知识区 BGM · YouTube 原视频播放器" src={`https://www.youtube-nocookie.com/embed/${jwMusic.youtubeVideoId}?autoplay=${jwMusic.autoplay ? 1 : 0}&playsinline=1&loop=1&playlist=${jwMusic.youtubeVideoId}`} allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin" />
+				<p class="text-xs text-50 mt-3">若未自动播放，请点击播放器。播放需要能够访问 YouTube。</p>
+				<a class="text-sm text-[var(--primary)] underline" href={`https://www.youtube.com/watch?v=${jwMusic.youtubeVideoId}`} target="_blank" rel="noopener noreferrer">打开原视频</a>
+			</div>
+		) : <MusicPlayer id={widgetId} />}
+	</WidgetLayout>
+)}

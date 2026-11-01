@@ -1,0 +1,23 @@
+---
+interface Props {
+  image: string;
+  hostImage?: string;
+  guestImage?: string;
+  guest: string;
+  host?: string;
+  sourceLink?: string;
+  compact?: boolean;
+}
+const { image, hostImage, guestImage, guest, host = "主持人", sourceLink, compact = false } = Astro.props;
+const paired = !!(hostImage && guestImage);
+---
+<figure class="interview-photos overflow-hidden rounded-xl mb-4" data-photo-mode={paired ? 'source-frames' : 'official-cover'}>
+  {paired ? <div class="grid grid-cols-2 gap-1 bg-black/80">
+    <div class="min-w-0"><img src={hostImage} alt={`${host}在本期原访谈中的画面`} width="480" height="270" loading="lazy" class="w-full h-auto" /><p class="text-center text-xs text-white/80 px-2 py-2">主持人 · {host}</p></div>
+    <div class="min-w-0"><img src={guestImage} alt={`${guest}在本期原访谈中的画面`} width="480" height="270" loading="lazy" class="w-full h-auto" /><p class="text-center text-xs text-white/80 px-2 py-2">嘉宾 · {guest}</p></div>
+  </div> : <img src={image} alt={`${host}对话${guest}的原节目封面`} width="1200" height="675" loading="lazy" class="w-full h-auto" />}
+  {!compact && <figcaption class="text-xs text-50 pt-3 leading-relaxed">
+    {paired ? '原节目公开预览画面，左右来自不同时间点。' : '图片为原节目发布封面。'}
+    {sourceLink && <a class="text-(--primary) ml-1" href={sourceLink} target="_blank" rel="noopener noreferrer">前往 B 站原视频 ↗</a>}
+  </figcaption>}
+</figure>

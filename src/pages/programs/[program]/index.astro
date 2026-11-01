@@ -1,0 +1,30 @@
+---
+import { getProgramCards, getPersonUrl } from "@/utils/interview-utils";
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+import { url } from "@/utils/url-utils";
+import InterviewPhotos from "@/components/misc/InterviewPhotos.astro";
+export async function getStaticPaths() {
+  return (await getProgramCards()).map(program => ({ params: { program: program.slug }, props: { program } }));
+}
+const { program } = Astro.props;
+---
+<MainGridLayout title={program.name} description={program.description}>
+  <section class="card-base p-6 md:p-8 mb-4">
+    <nav aria-label="当前位置" class="text-sm text-50 mb-4"><a class="text-(--primary)" href={url('/categories/')}>采访节目</a> / {program.name}</nav>
+    <h1 class="text-3xl font-bold text-(--primary)">{program.name}</h1>
+    <p class="text-50 mt-3">{program.description}</p>
+    <p class="text-sm text-50 mt-3">{program.people.length} 位人物 · {program.posts.length} 篇访谈整理</p>
+  </section>
+  <section aria-label="被采访人物" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+    {program.people.map(person => (
+      <a href={getPersonUrl(person)} class="card-base p-6 group onload-animation">
+        {person.data.image && <InterviewPhotos image={person.data.image} hostImage={person.data.hostImage} guestImage={person.data.guestImage} guest={person.data.name} host={person.data.host} compact />}
+        <span class="text-xs text-(--primary)">被采访人物</span>
+        <h2 class="text-2xl font-bold text-90 group-hover:text-(--primary) mt-2">{person.data.name}</h2>
+        <p class="text-50 text-sm mt-3 leading-relaxed">{person.data.description}</p>
+        <span class="inline-block text-(--primary) text-sm mt-5">人物经历 · 采访概述 →</span>
+      </a>
+    ))}
+  </section>
+  {program.people.length === 0 && <div class="card-base p-8 text-50">这个节目的人物资料正在整理中，添加后会显示在这里。</div>}
+</MainGridLayout>

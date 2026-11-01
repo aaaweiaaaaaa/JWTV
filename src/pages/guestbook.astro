@@ -1,0 +1,77 @@
+---
+import { getEntry, render } from "astro:content";
+import Comment from "@components/comment/index.astro";
+import Markdown from "@components/common/Markdown.astro";
+import { Icon } from "astro-icon/components";
+import { commentConfig, siteConfig } from "@/config";
+import I18nKey from "@/i18n/i18nKey";
+import { i18n } from "@/i18n/translation";
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+import "@/styles/pages/common.css";
+
+// 检查页面是否启用
+if (!siteConfig.pages.guestbook) {
+	return Astro.redirect("/404/");
+}
+
+const guestbookPost = await getEntry("spec", "guestbook");
+
+if (!guestbookPost) {
+	throw new Error("guestbook page content not found");
+}
+
+const { Content } = await render(guestbookPost);
+
+// 检查评论系统是否启用
+const isCommentEnabled = commentConfig?.type && commentConfig.type !== "none";
+
+// 页面标题和描述
+const title = i18n(I18nKey.guestbook);
+const description = i18n(I18nKey.guestbookDescription);
+---
+
+<MainGridLayout title={title} description={description}>
+  <div
+    class="flex w-full rounded-(--radius-large) overflow-hidden relative min-h-32"
+  >
+    <div class="card-base z-10 px-9 py-6 relative w-full">
+      <!-- 页面标题和描述 -->
+      <div class="mb-8">
+        <div class="page-heading">
+          <div class="page-icon" aria-hidden="true">
+            <Icon name="material-symbols:chat" />
+          </div>
+          <div>
+            <h2>{title}</h2>
+            {description && <p>{description}</p>}
+          </div>
+        </div>
+      </div>
+      
+      <Markdown class="mt-2">
+        <Content />
+      </Markdown>
+    </div>
+  </div>
+
+  <!-- 评论区 -->
+  <div class="mt-4">
+    {isCommentEnabled ? (
+      <Comment post={guestbookPost} customPath="/guestbook/" />
+    ) : (
+      <section class="card-base p-6 md:p-8 mb-6" aria-labelledby="guestbook-form-title">
+        <h2 id="guestbook-form-title" class="text-xl font-bold text-(--primary) mb-2">写一条留言</h2>
+        <p class="text-sm text-50 mb-5" role="status">留言服务正在准备中，暂时不能提交。接通后，填写用户名和邮箱即可发言。</p>
+        <fieldset disabled aria-describedby="guestbook-pending" class="space-y-4 opacity-70">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <label class="block text-sm text-75">用户名（公开）<input name="nick" required autocomplete="nickname" placeholder="你希望显示的名字" class="mt-2 block w-full rounded-xl p-3 bg-(--btn-regular-bg)" /></label>
+            <label class="block text-sm text-75">邮箱（不公开）<input name="mail" type="email" required autocomplete="email" placeholder="name@example.com" class="mt-2 block w-full rounded-xl p-3 bg-(--btn-regular-bg)" /></label>
+          </div>
+          <label class="block text-sm text-75">留言内容<textarea name="comment" required rows="5" placeholder="分享你的想法，或推荐一场值得整理的访谈。" class="mt-2 block w-full rounded-xl p-3 bg-(--btn-regular-bg)"></textarea></label>
+          <button type="button" disabled class="btn-regular rounded-xl px-5 py-3 cursor-not-allowed">暂不可提交</button>
+        </fieldset>
+        <p id="guestbook-pending" class="text-xs text-50 mt-4">开通留言服务后这里会显示真实留言，不会将留言仅保存在访客浏览器中。</p>
+      </section>
+    )}
+  </div>
+</MainGridLayout>

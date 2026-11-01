@@ -1,0 +1,33 @@
+---
+import MainGridLayout from "@/layouts/MainGridLayout.astro";
+import { getKnowledgePoints, getProgramCards } from "@/utils/interview-utils";
+import { getPostUrlBySlug } from "@/utils/url-utils";
+export function getStaticPaths() { return [{ params: { page: undefined } }]; }
+const programs = await getProgramCards();
+---
+<MainGridLayout title="访谈知识点" description="按访谈节目整理技术、商业和成长知识。">
+  <header class="card-base px-8 py-6 mb-4">
+    <h1 class="text-2xl font-bold text-(--primary)">访谈知识点</h1>
+    <p class="text-50 text-sm mt-2">按节目与人物回顾知识。内容摘自已提供的整理资料，原节目链接与事实仍待核对；后续可持续补充。</p>
+    <nav aria-label="节目知识点索引" class="flex flex-wrap gap-3 mt-5">
+      {programs.map(program => <a class="btn-regular px-4 py-2 rounded-lg text-sm" href={`#knowledge-${program.slug}`}>{program.name}</a>)}
+    </nav>
+  </header>
+  {programs.map(program => <section id={`knowledge-${program.slug}`} class="card-base p-6 md:p-8 mb-4 scroll-mt-28">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+      <h2 class="text-xl font-bold text-(--primary)">{program.name}</h2>
+      <a class="text-sm text-(--primary)" href={program.url}>查看人物 →</a>
+    </div>
+    {program.posts.length === 0 && <p class="text-50 text-sm">知识点待补充。</p>}
+    <div class="space-y-4">
+      {program.posts.map(post => {
+        const points = getKnowledgePoints(post.body);
+        return <details class="rounded-xl bg-(--btn-regular-bg) p-5">
+          <summary class="cursor-pointer font-bold text-90">{post.data.series} <span class="text-sm font-normal text-50">· {points.length} 个知识点</span></summary>
+          {points.length ? <dl class="mt-5 space-y-5">{points.map(point => <div><dt class="font-bold text-(--primary)">{point.title}</dt><dd class="text-sm text-75 leading-relaxed mt-2">{point.description}</dd></div>)}</dl> : <p class="text-sm text-50 mt-4">知识点待补充。</p>}
+          <a class="inline-block text-sm text-(--primary) mt-5" href={getPostUrlBySlug(post.id)}>阅读完整访谈 · 查看来源说明 →</a>
+        </details>;
+      })}
+    </div>
+  </section>)}
+</MainGridLayout>

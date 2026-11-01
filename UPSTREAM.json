@@ -1,0 +1,8 @@
+{
+  "upstream": "https://github.com/CuteLeaf/Firefly",
+  "source": "https://codeload.github.com/CuteLeaf/Firefly/zip/refs/heads/master",
+  "downloaded": "2026-10-25",
+  "version": "6.16.8",
+  "archive_sha256": "8cc758d393b184c32941524ed721f3db092974695563c6bfd458717326734914",
+  "method": "Official source archive; git clone connection unavailable"
+}

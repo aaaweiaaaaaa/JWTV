@@ -1,0 +1,20 @@
+---
+import WidgetLayout from "@/components/common/WidgetLayout.astro";
+import type { WidgetComponentConfig } from "@/types/config";
+import { getSortedPosts } from "@/utils/content-utils";
+import { getPostUrlBySlug } from "@/utils/url-utils";
+interface Props { class?: string; style?: string; widgetConfig?: WidgetComponentConfig; }
+const { class: className, style, widgetConfig } = Astro.props;
+const posts = (await getSortedPosts()).filter(post => !post.data.draft).sort((a,b) =>
+  (b.data.updated || b.data.published).getTime() - (a.data.updated || a.data.published).getTime()
+).slice(0, 5);
+---
+<WidgetLayout name="最新动态" id="recent-updates" showTitle={widgetConfig?.showTitle !== false} class={className} style={style}>
+  <p class="text-xs text-50 px-3 pb-2">最近新增或更新的内容</p>
+  <ol class="space-y-1">
+    {posts.map(post => <li><a class="block rounded-lg px-3 py-3 hover:bg-(--btn-card-bg-hover)" href={getPostUrlBySlug(post.id)}>
+      <span class="text-xs text-50"><time datetime={(post.data.updated || post.data.published).toISOString()}>{(post.data.updated || post.data.published).toISOString().slice(0,10)}</time> · {post.data.updated ? '更新' : '新增访谈'}</span>
+      <p class="text-sm text-75 mt-1 leading-relaxed">{post.data.title}</p>
+    </a></li>)}
+  </ol>
+</WidgetLayout>

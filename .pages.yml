@@ -1,0 +1,411 @@
+media:
+  - name: images
+    label: 图片
+    input: public/assets/uploads
+    output: /assets/uploads
+    rename: safe
+    extensions: [jpg, jpeg, png, webp, avif]
+  - name: audio
+    label: 音乐文件
+    input: public/assets/audio
+    output: /assets/audio
+    rename: safe
+    extensions: [mp3, m4a, ogg, wav]
+
+content:
+  - name: posts
+    label: 访谈笔记
+    type: collection
+    path: src/content/posts
+    format: yaml-frontmatter
+    filename:
+      template: "{year}-{month}-{day}-{primary}.md"
+      field: create
+    view:
+      primary: title
+      sort: published
+      order: desc
+    fields:
+      - name: title
+        label: 文章标题
+        type: string
+        required: true
+      - name: published
+        label: 笔记发布日期
+        type: date
+        required: true
+        options:
+          format: yyyy-MM-dd
+      - name: description
+        label: 文章简介
+        type: text
+      - name: category
+        label: 采访节目
+        type: select
+        required: true
+        options:
+          values: [罗永浩的十字路口, 张小珺的商业访谈, whynotTV, 孙学]
+      - name: sourceLink
+        label: B站原视频链接
+        type: string
+      - name: series
+        label: 被采访人物（必须与人物资料中的姓名相同）
+        type: string
+        required: true
+      - name: tags
+        label: 标签（嘉宾、技术和内容主题）
+        type: string
+        list: true
+      - name: image
+        label: 文章封面
+        type: image
+        options:
+          media: images
+      - name: draft
+        label: 保存为草稿
+        type: boolean
+        default: true
+      - name: comment
+        label: 允许读者评论心得
+        type: boolean
+        default: false
+      - name: body
+        label: 访谈正文
+        type: rich-text
+        options:
+          format: markdown
+          media: images
+          switcher: true
+  - name: site-images
+    label: 头像、Logo与横幅
+    type: file
+    path: src/config/jwMedia.json
+    format: json
+    fields:
+      - name: profileName
+        label: 站长显示名称
+        type: string
+        required: true
+      - name: profileBio
+        label: 个人介绍
+        type: text
+      - name: avatar
+        label: 侧边栏头像（建议正方形）
+        type: image
+        options:
+          media: images
+        required: true
+      - name: logo
+        label: 导航栏Logo
+        type: image
+        options:
+          media: images
+        required: true
+      - name: bannerDesktop
+        label: 电脑横幅背景
+        type: image
+        options:
+          media: images
+        required: true
+      - name: bannerMobile
+        label: 手机横幅背景
+        type: image
+        options:
+          media: images
+        required: true
+
+  - name: music
+    label: 侧边栏音乐
+    type: file
+    path: src/config/jwMusic.json
+    format: json
+    fields:
+      - name: youtubeVideoId
+        label: YouTube 视频编号（本地歌单为空时使用）
+        type: string
+      - name: autoplay
+        label: 尝试自动播放（受浏览器限制）
+        type: boolean
+      - name: enabled
+        label: 显示音乐面板
+        type: boolean
+      - name: volume
+        label: 初始音量（0到1）
+        type: number
+        options:
+          min: 0
+          max: 1
+          step: 0.05
+      - name: playlist
+        label: 我的歌单
+        type: object
+        list: true
+        fields:
+          - name: name
+            label: 歌曲名称
+            type: string
+            required: true
+          - name: artist
+            label: 歌手或作者
+            type: string
+            required: true
+          - name: url
+            label: 音乐文件
+            type: file
+            required: true
+            options:
+              media: audio
+          - name: cover
+            label: 歌曲封面
+            type: image
+            options:
+              media: images
+          - name: lrc
+            label: 歌词（可留空）
+            type: text
+  - name: community
+    label: 留言服务连接
+    type: file
+    path: src/config/jwCommunity.json
+    format: json
+    fields:
+      - name: walineServerURL
+        label: 已部署的Waline服务HTTPS地址
+        type: string
+        description: 未接通时保持为空；不要填写主题演示地址。
+
+  - name: people-luoyonghao
+    label: 人物资料 · 罗永浩的十字路口
+    type: collection
+    path: src/content/people/luoyonghao
+    format: yaml-frontmatter
+    view:
+      primary: name
+    fields:
+      - name: name
+        label: 被采访人物姓名
+        type: string
+        required: true
+      - name: program
+        label: 所属采访节目
+        type: select
+        default: 罗永浩的十字路口
+        required: true
+        options:
+          values: [罗永浩的十字路口]
+      - name: description
+        label: 人物卡片简介
+        type: text
+      - name: image
+        label: 原节目封面
+        type: image
+        options:
+          media: images
+      - name: host
+        label: 主持人姓名
+        type: string
+      - name: sourceLink
+        label: B站原视频链接
+        type: string
+      - name: hostImage
+        label: 主持人原节目截图（可选）
+        type: image
+        options:
+          media: images
+      - name: guestImage
+        label: 嘉宾原节目截图（与主持人截图同时设置）
+        type: image
+        options:
+          media: images
+      - name: order
+        label: 显示顺序
+        type: number
+        default: 0
+      - name: draft
+        label: 草稿
+        type: boolean
+        default: true
+      - name: body
+        label: 人物经历与采访概述
+        type: rich-text
+        options:
+          format: markdown
+          media: images
+          switcher: true
+
+  - name: people-xiaojun
+    label: 人物资料 · 张小珺的商业访谈
+    type: collection
+    path: src/content/people/xiaojun
+    format: yaml-frontmatter
+    view:
+      primary: name
+    fields:
+      - name: name
+        label: 被采访人物姓名
+        type: string
+        required: true
+      - name: program
+        label: 所属采访节目
+        type: select
+        default: 张小珺的商业访谈
+        required: true
+        options:
+          values: [张小珺的商业访谈]
+      - name: description
+        label: 人物卡片简介
+        type: text
+      - name: image
+        label: 原节目封面
+        type: image
+        options:
+          media: images
+      - name: host
+        label: 主持人姓名
+        type: string
+      - name: sourceLink
+        label: B站原视频链接
+        type: string
+      - name: hostImage
+        label: 主持人原节目截图（可选）
+        type: image
+        options:
+          media: images
+      - name: guestImage
+        label: 嘉宾原节目截图（与主持人截图同时设置）
+        type: image
+        options:
+          media: images
+      - name: order
+        label: 显示顺序
+        type: number
+        default: 0
+      - name: draft
+        label: 草稿
+        type: boolean
+        default: true
+      - name: body
+        label: 人物经历与采访概述
+        type: rich-text
+        options:
+          format: markdown
+          media: images
+          switcher: true
+
+  - name: people-whynottv
+    label: 人物资料 · whynotTV
+    type: collection
+    path: src/content/people/whynottv
+    format: yaml-frontmatter
+    view:
+      primary: name
+    fields:
+      - name: name
+        label: 被采访人物姓名
+        type: string
+        required: true
+      - name: program
+        label: 所属采访节目
+        type: select
+        default: whynotTV
+        required: true
+        options:
+          values: [whynotTV]
+      - name: description
+        label: 人物卡片简介
+        type: text
+      - name: image
+        label: 原节目封面
+        type: image
+        options:
+          media: images
+      - name: host
+        label: 主持人姓名
+        type: string
+      - name: sourceLink
+        label: B站原视频链接
+        type: string
+      - name: hostImage
+        label: 主持人原节目截图（可选）
+        type: image
+        options:
+          media: images
+      - name: guestImage
+        label: 嘉宾原节目截图（与主持人截图同时设置）
+        type: image
+        options:
+          media: images
+      - name: order
+        label: 显示顺序
+        type: number
+        default: 0
+      - name: draft
+        label: 草稿
+        type: boolean
+        default: true
+      - name: body
+        label: 人物经历与采访概述
+        type: rich-text
+        options:
+          format: markdown
+          media: images
+          switcher: true
+
+  - name: people-sunxue
+    label: 人物资料 · 孙学
+    type: collection
+    path: src/content/people/sunxue
+    format: yaml-frontmatter
+    view:
+      primary: name
+    fields:
+      - name: name
+        label: 被采访人物姓名
+        type: string
+        required: true
+      - name: program
+        label: 所属采访节目
+        type: select
+        default: 孙学
+        required: true
+        options:
+          values: [孙学]
+      - name: description
+        label: 人物卡片简介
+        type: text
+      - name: image
+        label: 原节目封面
+        type: image
+        options:
+          media: images
+      - name: host
+        label: 主持人姓名
+        type: string
+      - name: sourceLink
+        label: B站原视频链接
+        type: string
+      - name: hostImage
+        label: 主持人原节目截图（可选）
+        type: image
+        options:
+          media: images
+      - name: guestImage
+        label: 嘉宾原节目截图（与主持人截图同时设置）
+        type: image
+        options:
+          media: images
+      - name: order
+        label: 显示顺序
+        type: number
+        default: 0
+      - name: draft
+        label: 草稿
+        type: boolean
+        default: true
+      - name: body
+        label: 人物经历与采访概述
+        type: rich-text
+        options:
+          format: markdown
+          media: images
+          switcher: true
