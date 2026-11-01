@@ -409,3 +409,17 @@ content:
           format: markdown
           media: images
           switcher: true
+
+  - name: about
+    label: 关于本站
+    type: file
+    path: src/content/spec/about.md
+    format: yaml-frontmatter
+    fields:
+      - name: body
+        label: 关于本站正文
+        type: rich-text
+        options:
+          format: markdown
+          media: images
+          switcher: true
