@@ -49,7 +49,7 @@ export const siteConfig: SiteConfig = {
 	subtitle: "听见观点，留下思考",
 
 	// 站点 URL
-	site_url: "https://jw-podcast-notes.heartyshore16384.chatgpt.site",
+	site_url: "https://weige.cloud",
 
 	// 站点描述
 	description: "记录商业、科技与人物访谈中的知识、观点和个人思考。",
